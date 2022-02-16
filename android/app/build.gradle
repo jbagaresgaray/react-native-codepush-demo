@@ -3,6 +3,28 @@ apply plugin: "com.android.application"
 import com.android.build.OutputFile
 import groovy.json.JsonSlurper
 
+// Create an easy to use function
+def getVersionFromNpm() {
+    //  Read and parse package.json file from project root
+    def inputFile = new File("$rootDir/../package.json")
+    def packageJson = new JsonSlurper().parseText(inputFile.text)
+
+    // Return the version, you can get any value this way
+    return packageJson["version"]
+}
+
+def getVersionCodeFromNpm() {
+    //  Read and parse package.json file from project root
+    def inputFile = new File("$rootDir/../package.json")
+    def packageJson = new JsonSlurper().parseText(inputFile.text)
+
+    // Return the version, you can get any value this way
+    return packageJson["versionCode"]
+}
+
+def appVersionCode = getVersionCodeFromNpm();
+def appVersionName = getVersionFromNpm();
+
 /**
  * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
  * and bundleReleaseJsAndAssets).
@@ -125,26 +147,7 @@ def enableHermes = project.ext.react.get("enableHermes", false);
 /**
  * Architectures to build native code for in debug.
  */
-def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitectures")
-
-// Create an easy to use function
-def getVersionFromNpm() {
-    //  Read and parse package.json file from project root
-    def inputFile = new File("$rootDir/../package.json")
-    def packageJson = new JsonSlurper().parseText(inputFile.text)
-
-    // Return the version, you can get any value this way
-    return packageJson["version"]
-}
-
-def getVersionCodeFromNpm() {
-    //  Read and parse package.json file from project root
-    def inputFile = new File("$rootDir/../package.json")
-    def packageJson = new JsonSlurper().parseText(inputFile.text)
-
-    // Return the version, you can get any value this way
-    return packageJson["versionCode"]
-}
+def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitectures");
 
 android {
     ndkVersion rootProject.ext.ndkVersion
@@ -155,8 +158,8 @@ android {
         applicationId "com.reactnativecodepushdemo"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode getVersionCodeFromNpm()
-        versionName getVersionFromNpm()
+        versionCode appVersionCode
+        versionName appVersionName
     }
     splits {
         abi {
