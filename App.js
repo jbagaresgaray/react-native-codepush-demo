@@ -26,6 +26,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import codePush from 'react-native-code-push';
+import DeviceInfo from 'react-native-device-info';
 
 const Section = ({children, title}) => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -89,6 +90,9 @@ let App = () => {
   const init = async () => {
     const localPackage = await codePush.getCurrentPackage();
     console.log('localPackage: ', localPackage);
+
+    const updateMetaData = await codePush.getUpdateMetadata();
+    console.log('updateMetaData: ', updateMetaData);
   };
 
   useEffect(() => {
@@ -106,20 +110,20 @@ let App = () => {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
+          <Section title="Device Info">
+            <Text style={styles.highlight}>App Version: </Text>
+            {DeviceInfo.getVersion()}
+            {'\n'}
+            <Text style={styles.highlight}>App Build: </Text>{' '}
+            {DeviceInfo.getBuildNumber()}
+            {'\n'}
+            <Text style={styles.highlight}>App Readable Version: </Text>{' '}
+            {DeviceInfo.getReadableVersion()}
+          </Section>
           <Section title="Step One">
             Edit <Text style={styles.highlight}>App.js</Text> to change this
             screen and then come back to see your edits.
           </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
         </View>
       </ScrollView>
     </SafeAreaView>

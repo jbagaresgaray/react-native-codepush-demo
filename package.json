@@ -1,6 +1,7 @@
 {
   "name": "reactnativecodepushdemo",
-  "version": "1.0.1",
+  "version": "1.0",
+  "versionCode": 2,
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -15,7 +16,8 @@
     "appcenter-crashes": "^4.4.3",
     "react": "17.0.2",
     "react-native": "0.67.2",
-    "react-native-code-push": "^7.0.4"
+    "react-native-code-push": "^7.0.4",
+    "react-native-device-info": "^8.4.9"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
