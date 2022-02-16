@@ -5,21 +5,15 @@ import groovy.json.JsonSlurper
 
 // Create an easy to use function
 def getVersionFromNpm() {
-    //  Read and parse package.json file from project root
     def inputFile = new File("$rootDir/../package.json")
     def packageJson = new JsonSlurper().parseText(inputFile.text)
-
-    // Return the version, you can get any value this way
     return packageJson["version"]
 }
 
 def getVersionCodeFromNpm() {
-    //  Read and parse package.json file from project root
     def inputFile = new File("$rootDir/../package.json")
     def packageJson = new JsonSlurper().parseText(inputFile.text)
-
-    // Return the version, you can get any value this way
-    return packageJson["versionCode"]
+    return packageJson["buildNumber"].toInteger()
 }
 
 def appVersionCode = getVersionCodeFromNpm();
