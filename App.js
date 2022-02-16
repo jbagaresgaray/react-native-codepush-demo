@@ -6,8 +6,7 @@
  * @flow strict-local
  */
 
-import React from 'react';
-import type {Node} from 'react';
+import React, {useEffect} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -26,7 +25,9 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-const Section = ({children, title}): Node => {
+import codePush from 'react-native-code-push';
+
+const Section = ({children, title}) => {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.sectionContainer}>
@@ -52,12 +53,47 @@ const Section = ({children, title}): Node => {
   );
 };
 
-const App: () => Node = () => {
+let App = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+
+  const codePushStatusDidChange = status => {
+    switch (status) {
+      case codePush.SyncStatus.CHECKING_FOR_UPDATE:
+        console.log('Checking for updates.');
+        break;
+      case codePush.SyncStatus.DOWNLOADING_PACKAGE:
+        console.log('Downloading package.');
+        break;
+      case codePush.SyncStatus.INSTALLING_UPDATE:
+        console.log('Installing update.');
+        break;
+      case codePush.SyncStatus.UP_TO_DATE:
+        console.log('Up-to-date.');
+        break;
+      case codePush.SyncStatus.UPDATE_INSTALLED:
+        console.log('Update installed.');
+        break;
+    }
+  };
+
+  const codePushDownloadDidProgress = progress => {
+    console.log(
+      progress.receivedBytes + ' of ' + progress.totalBytes + ' received.',
+    );
+  };
+
+  const init = async () => {
+    const localPackage = await codePush.getCurrentPackage();
+    console.log('localPackage: ', localPackage);
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -108,5 +144,14 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 });
+
+const codePushOptions = {
+  checkFrequency: codePush.CheckFrequency.ON_APP_RESUME,
+  deploymentKey: '768ec5fa-ea2e-4b25-84d3-a0ac56bcacdd',
+  installMode: codePush.InstallMode.IMMEDIATE,
+  updateDialog: true,
+};
+
+App = codePush(codePushOptions)(App);
 
 export default App;
