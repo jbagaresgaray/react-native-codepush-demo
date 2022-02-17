@@ -7,4 +7,4 @@ echo "VersionCode "$version_code
 
 echo "FullVersion "$version_name"."$version_code
 
-appcenter codepush release-react -a jbagaresgaray/ReactNativeCodePush -t $version_name"."$version_code
+appcenter codepush release-react -a jbagaresgaray/ReactNativeCodePush -d Staging -t $version_name

@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -56,43 +56,75 @@ const Section = ({children, title}) => {
 
 let App = () => {
   const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  const [syncMessage, setSyncMessage] = useState('');
+  const [progress, setProgress] = useState(null);
 
   const codePushStatusDidChange = status => {
+    console.log('codePushStatusDidChange: ', status);
     switch (status) {
       case codePush.SyncStatus.CHECKING_FOR_UPDATE:
         console.log('Checking for updates.');
+        setSyncMessage('Checking for updates.');
         break;
       case codePush.SyncStatus.DOWNLOADING_PACKAGE:
         console.log('Downloading package.');
+        setSyncMessage('Downloading package.');
         break;
       case codePush.SyncStatus.INSTALLING_UPDATE:
         console.log('Installing update.');
+        setSyncMessage('Installing update.');
         break;
       case codePush.SyncStatus.UP_TO_DATE:
         console.log('Up-to-date.');
+        setSyncMessage('Up-to-date.');
         break;
       case codePush.SyncStatus.UPDATE_INSTALLED:
         console.log('Update installed.');
+        setSyncMessage('Update installed.');
+        break;
+      case codePush.SyncStatus.UNKNOWN_ERROR:
+        console.log('An unknown error occurred.');
+        setSyncMessage('An unknown error occurred.');
         break;
     }
   };
 
   const codePushDownloadDidProgress = progress => {
     console.log(
-      progress.receivedBytes + ' of ' + progress.totalBytes + ' received.',
+      progress?.receivedBytes + ' of ' + progress?.totalBytes + ' received.',
     );
+    setProgress({progress});
+  };
+
+  const handleBinaryVersionMismatchCallback = callback => {
+    console.log('handleBinaryVersionMismatchCallback : ', callback);
   };
 
   const init = async () => {
-    const localPackage = await codePush.getCurrentPackage();
-    console.log('localPackage: ', localPackage);
-
     const updateMetaData = await codePush.getUpdateMetadata();
     console.log('updateMetaData: ', updateMetaData);
+
+    try {
+      const hasUpdate = await codePush.checkForUpdate(
+        codePushOptions.deploymentKey,
+        handleBinaryVersionMismatchCallback,
+      );
+      console.log('hasUpdate: ', hasUpdate);
+      if (!hasUpdate) {
+        console.log('The app is up to date!');
+      } else {
+        console.log('An update is available! Should we download it?');
+      }
+    } catch (error) {
+      console.log('hasUpdate error: ', error);
+    }
+
+    // codePush.sync(
+    //   {installMode: codePush.InstallMode.IMMEDIATE, updateDialog: true},
+    //   codePushStatusDidChange,
+    //   codePushDownloadDidProgress,
+    //   handleBinaryVersionMismatchCallback,
+    // );
   };
 
   useEffect(() => {
@@ -100,12 +132,13 @@ let App = () => {
   }, []);
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
+    <SafeAreaView style={{flex: 1}}>
+      <StatusBar />
+      <ScrollView contentInsetAdjustmentBehavior="automatic">
         <Header />
+        <DebugInstructions />
+        <ReloadInstructions />
+        <ReloadInstructions />
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
@@ -120,9 +153,13 @@ let App = () => {
             <Text style={styles.highlight}>App Readable Version: </Text>{' '}
             {DeviceInfo.getReadableVersion()}
           </Section>
-          <Section title="Step One">
-            Update 5 <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
+          <Section title="Update Status">
+            <Text style={styles.highlight}>{syncMessage}</Text>
+          </Section>
+          <Section title="Update Progress">
+            <Text style={styles.highlight}>
+              {progress?.receivedBytes} of {progress?.totalBytes} bytes received
+            </Text>
           </Section>
         </View>
       </ScrollView>
@@ -155,6 +192,21 @@ const codePushOptions = {
   installMode: codePush.InstallMode.IMMEDIATE,
   updateDialog: true,
 };
+
+if (__DEV__) {
+  if (
+    global.location &&
+    (global.location?.pathname?.includes('/debugger-ui') ||
+      global.location?.pathname?.includes('Debugger'))
+  ) {
+    global.XMLHttpRequest = global.originalXMLHttpRequest
+      ? global.originalXMLHttpRequest
+      : global.XMLHttpRequest;
+    global.FormData = global.originalFormData
+      ? global.originalFormData
+      : global.FormData;
+  }
+}
 
 App = codePush(codePushOptions)(App);
 
