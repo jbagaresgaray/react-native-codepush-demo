@@ -121,7 +121,7 @@ let App = () => {
             {DeviceInfo.getReadableVersion()}
           </Section>
           <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
+            Update <Text style={styles.highlight}>App.js</Text> to change this
             screen and then come back to see your edits.
           </Section>
         </View>
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
 
 const codePushOptions = {
   checkFrequency: codePush.CheckFrequency.ON_APP_RESUME,
-  deploymentKey: '768ec5fa-ea2e-4b25-84d3-a0ac56bcacdd',
+  deploymentKey: 'LMrKWgyz9iRmgOSZ3Wk_vChBUDZfFqyDCCL57',
   installMode: codePush.InstallMode.IMMEDIATE,
   updateDialog: true,
 };

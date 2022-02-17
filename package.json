@@ -1,13 +1,14 @@
 {
   "name": "reactnativecodepushdemo",
   "version": "1.0",
-  "buildNumber": "2",
+  "buildNumber": "3",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "codepush": "sh ./appcenter.sh",
+    "build-android": "cd android && gradlew assembleRelease",
     "test": "jest",
     "lint": "eslint ."
   },
