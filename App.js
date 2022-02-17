@@ -121,7 +121,7 @@ let App = () => {
             {DeviceInfo.getReadableVersion()}
           </Section>
           <Section title="Step One">
-            Update <Text style={styles.highlight}>App.js</Text> to change this
+            Update 5 <Text style={styles.highlight}>App.js</Text> to change this
             screen and then come back to see your edits.
           </Section>
         </View>
